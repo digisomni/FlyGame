@@ -1,4 +1,5 @@
 (function () {
+    var FLY_GAME_CHANNEL = "FLY-GAME-CHANNEL";
     var LOCATION_ROOT_URL = Script.resolvePath(".");
     var SEARCH_CLOSE = 20;
     var SEARCH_FAR = 10000;
@@ -45,6 +46,8 @@
                 volume: 1
             });
             Entities.editEntity(drawplayerStatusTextId, { text: playerName });
+            Messages.subscribe(FLY_GAME_CHANNEL);
+            Messages.messageReceived.connect(onMessageReceived);
             starttimer();
         }
     };
@@ -53,6 +56,8 @@
         var playerStopID = param[1];
         if (playerSelected) {
             if (playerStopID === playerID) {
+                Messages.unsubscribe(FLY_GAME_CHANNEL);
+                Messages.messageReceived.disconnect(onMessageReceived);
                 Script.clearInterval(timerset);
                 Entities.editEntity(drawplayerStatusTextId, { text: "Player: Game Aborted" });
                 reset();
@@ -69,8 +74,25 @@
         print(JSON.stringify("check: " + playerID));
         if (checkAvatar1 === playerID && playerSelected === true) {
             lastwaypointID = param[3];
+            checkWaypoints(lastwaypointID);
         }
     };
+
+    function onMessageReceived (channel, message, sender, localOnly) {
+        if (channel === FLY_GAME_CHANNEL) {
+            var parsedMessage = JSON.parse(message);
+
+            if (parsedMessage.command === 'script-to-master-server-receive-data-from-waypoint') {
+                var checkAvatar1 = parsedMessage.data.param[1];
+                print(JSON.stringify("received playerID is: " + checkAvatar1));
+                print(JSON.stringify("check: " + playerID));
+                if (checkAvatar1 === playerID && playerSelected === true) {
+                    lastwaypointID = parsedMessage.data.param[3];
+                    checkWaypoints(lastwaypointID);
+                }
+            }
+        }
+    }
 
     this.preload = function (entityID) {
         consolePosition = Entities.getEntityProperties(entityID,"position").position;
@@ -116,7 +138,6 @@
                 if (timer % 1 === 0) {
                     Entities.editEntity(drawplayerTimerTextId, { text: "     " });
                     Entities.editEntity(drawplayerTimerTextId, { text: timer/TIME_ACCURACY });
-                    checkWaypoints(lastwaypointID);
                 }
             }, STEP);
             entitiesFoundOnStart = Entities.findEntities(consolePosition, SEARCH_FAR);
@@ -214,6 +235,8 @@
     }
 
     Script.scriptEnding.connect(function () {
+        Messages.unsubscribe(FLY_GAME_CHANNEL);
+        Messages.messageReceived.disconnect(onMessageReceived);
         Script.stop();
     });
 

@@ -1,4 +1,5 @@
 (function () {
+    var FLY_GAME_CHANNEL = "FLY-GAME-CHANNEL";
     var consoleID;
     var avatarName;
     var props;
@@ -28,19 +29,30 @@
         }
     }
 
+    // function sendDataToConsole() {
+    //     avatarName = MyAvatar.displayName;
+    //     if (consoleID) {
+    //         Entities.callEntityServerMethod(
+    //             consoleID,
+    //             "receiveDataFromWaypoint",
+    //             [avatarName,MyAvatar.sessionUUID,myName,myID]
+    //         );
+    //         print(JSON.stringify("Try to send ..... " + avatarName + " + " + myName));
+    //     }
+    // }
+
     function sendDataToConsole() {
         avatarName = MyAvatar.displayName;
-        if (consoleID) {
-            Entities.callEntityServerMethod(
-                consoleID,
-                "receiveDataFromWaypoint",
-                [avatarName,MyAvatar.sessionUUID,myName,myID]
-            );
-            print(JSON.stringify("Try to send ..... " + avatarName + " + " + myName));
-        }
+
+        Messages.sendMessage(FLY_GAME_CHANNEL, JSON.stringify({
+            'command': 'script-to-master-server-receive-data-from-waypoint',
+            'data': {
+                'param': [avatarName, MyAvatar.sessionUUID, myName, myID]
+            }
+        }));
+
+        print(JSON.stringify("Try to send ..... " + avatarName + " + " + myName));
     }
-
-
 
     function waypointEntered() {
         if (!consoleFound) {

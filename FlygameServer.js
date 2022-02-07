@@ -69,7 +69,6 @@
         print(JSON.stringify("check: " + playerID));
         if (checkAvatar1 === playerID && playerSelected === true) {
             lastwaypointID = param[3];
-            checkWaypoints(lastwaypointID);          
         }
     };
 
@@ -117,6 +116,7 @@
                 if (timer % 1 === 0) {
                     Entities.editEntity(drawplayerTimerTextId, { text: "     " });
                     Entities.editEntity(drawplayerTimerTextId, { text: timer/TIME_ACCURACY });
+                    checkWaypoints(lastwaypointID);
                 }
             }, STEP);
             timerStart = true;

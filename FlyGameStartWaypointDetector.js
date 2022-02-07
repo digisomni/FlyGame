@@ -61,7 +61,7 @@
         sendDataToConsole();
     }
     this.enterEntity = function(entityID) {
-        console.info("Entered Entity...", entityID)
+        console.log("Entered Entity... " + entityID)
         waypointEntered(entityID);
     };
 });

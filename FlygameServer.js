@@ -119,6 +119,7 @@
                     checkWaypoints(lastwaypointID);
                 }
             }, STEP);
+            entitiesFoundOnStart = Entities.findEntities(consolePosition, SEARCH_FAR);
             timerStart = true;
         }
         if (timer > MAX_STEP) {

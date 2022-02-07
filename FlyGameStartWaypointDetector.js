@@ -12,6 +12,9 @@
 
     this.preload = function (entityID) {
         this.entityID = entityID;
+        if (!consoleFound) {
+            findConsole();
+        }
         myID = entityID;
         myPosition = Entities.getEntityProperties(this.entityID, 'position').position;
         myName = Entities.getEntityProperties(this.entityID, 'name').name;
@@ -55,13 +58,10 @@
     }
 
     function waypointEntered() {
-        if (!consoleFound) {
-            findConsole();
-        }
         sendDataToConsole();
-
     }
     this.enterEntity = function(entityID) {
+        console.info("Entered Entity...", entityID)
         waypointEntered(entityID);
     };
 });

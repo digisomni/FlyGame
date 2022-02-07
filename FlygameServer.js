@@ -79,6 +79,7 @@
     };
 
     function onMessageReceived (channel, message, sender, localOnly) {
+        console.info("RECEIVED ON SERVER");
         if (channel === FLY_GAME_CHANNEL) {
             var parsedMessage = JSON.parse(message);
 
